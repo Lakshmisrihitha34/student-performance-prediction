@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>About This Project</h2>
+
+<div class="result-box">
+    <h3>📘 Project Title</h3>
+    <p>Explainable Student Performance Prediction Using Machine Learning</p>
+
+    <h3 style="margin-top: 20px;">🎯 Tagline</h3>
+    <p><i>"See the prediction. Know the reason."</i></p>
+
+    <h3 style="margin-top: 20px;">🧠 How It Works</h3>
+    <ul>
+        <li>Collects student data: knowledge test, study hours, previous marks, assignments</li>
+        <li>Uses Machine Learning (Random Forest) to predict pass/fail</li>
+        <li>SHAP explains which factors influenced the prediction</li>
+        <li>Provides personalized recommendations for improvement</li>
+        <li>Enables What-If analysis for interactive exploration</li>
+    </ul>
+
+    <h3 style="margin-top: 20px;">🛠️ Technologies Used</h3>
+    <ul>
+        <li>Frontend: HTML, CSS, JavaScript</li>
+        <li>Backend: Python, Flask</li>
+        <li>ML: Scikit-learn, Random Forest, XGBoost</li>
+        <li>Explainability: SHAP</li>
+        <li>Database: SQLite</li>
+    </ul>
+</div>
+
+{% endblock %}

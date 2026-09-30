@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Welcome, {{ username }}! 👋</h2>
+<p style="margin-bottom: 20px; color: #555;">
+    This is your dashboard for <b>Explainable Student Performance Prediction</b>.
+    Use the options below to get started.
+</p>
+
+<div class="card-grid">
+
+    <div class="card">
+        <h3>🔮 Predict Performance</h3>
+        <p>Enter student information and get instant pass/fail prediction with SHAP explanation.</p>
+        <a href="{{ url_for('prediction') }}">Go to Prediction →</a>
+    </div>
+
+    <div class="card">
+        <h3>📊 Model Info</h3>
+        <p>Learn about the machine learning models used: Random Forest, XGBoost, and SHAP explainability.</p>
+        <a href="{{ url_for('about') }}">Learn More →</a>
+    </div>
+
+    <div class="card">
+        <h3>👤 Your Account</h3>
+        <p>You are logged in as <b>{{ username }}</b>. Logout anytime from the top menu.</p>
+        <a href="{{ url_for('logout') }}">Logout →</a>
+    </div>
+
+</div>
+
+{% endblock %}
