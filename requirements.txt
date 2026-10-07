@@ -2,7 +2,7 @@ Flask
 pandas
 numpy
 scikit-learn
-xgboost
 shap
-matplotlib
 Werkzeug
+gunicorn
+openpyxl

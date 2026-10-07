@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>👨‍🎓 My Class — Student Records</h2>
+
+<form method="GET" style="flex-direction: row; max-width: 100%; margin-bottom: 20px;">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search by name or student ID..." style="flex:1;">
+    <button type="submit" style="margin-left: 10px;">🔍 Search</button>
+    {% if q or show_all %}
+        <a href="{{ url_for('students') }}" style="margin-left: 10px; align-self: center;">Clear</a>
+    {% endif %}
+</form>
+
+<div style="margin-bottom: 20px; display:flex; gap:10px; flex-wrap:wrap;">
+    <a href="{{ url_for('add_student') }}"
+       style="background:#1F3864;color:white;padding:10px 18px;border-radius:6px;text-decoration:none;">
+       ➕ Add Student
+    </a>
+        <a href="{{ url_for('export_students') }}"
+       style="background:#6f42c1;color:white;padding:10px 18px;border-radius:6px;text-decoration:none;">
+       📊 Export Class to Excel
+    </a>
+    {% if not show_all and not q %}
+        <a href="{{ url_for('students', show_all=1) }}"
+           style="background:#28a745;color:white;padding:10px 18px;border-radius:6px;text-decoration:none;">
+           📋 Show All Students
+        </a>
+    {% endif %}
+</div>
+
+<div class="result-box" style="margin-bottom:20px;">
+    <h3>📥 Import Class from Excel</h3>
+    <p style="font-size:14px;color:#555;">
+        Columns required: <b>Name, Knowledge Test, Study Hours, Previous Marks, Assignments</b><br>
+        Study Hours must be <b>0–24</b>. Marks range (0–100 or 0–50) is detected <b>automatically</b>.
+    </p>
+    <form method="POST" action="{{ url_for('import_students') }}" enctype="multipart/form-data"
+          style="flex-direction:row;max-width:100%;gap:10px;">
+        <input type="file" name="file" accept=".xlsx" required style="flex:1;">
+        <button type="submit" style="margin-left:10px;">📤 Import</button>
+    </form>
+</div>
+
+<div class="result-box">
+    {% if not q and not show_all %}
+        <div style="text-align:center;padding:40px;color:#888;">
+            <h3 style="color:#888;">🔍 Search to view students</h3>
+            <p>Type a name or student ID above, or click <b>Show All Students</b> to see everyone.</p>
+        </div>
+    {% elif students %}
+        <p style="margin-bottom:10px;color:#555;font-size:14px;">
+            Showing <b>{{ students|length }}</b> student{{ 's' if students|length != 1 else '' }}
+            {% if q %} matching "<b>{{ q }}</b>"{% endif %}
+        </p>
+        <table border="1" style="border-collapse:collapse;width:100%;font-size:14px;">
+            <tr style="background:#1F3864;color:white;">
+                <th style="padding:8px;">ID</th>
+                <th style="padding:8px;">Name</th>
+                <th style="padding:8px;">KT</th>
+                <th style="padding:8px;">SH</th>
+                <th style="padding:8px;">PM</th>
+                <th style="padding:8px;">ASG</th>
+                <th style="padding:8px;">Prediction</th>
+                <th style="padding:8px;">Action</th>
+            </tr>
+            {% for s in students %}
+            <tr>
+                <td style="padding:8px;">{{ s[1] or "-" }}</td>
+                <td style="padding:8px;"><a href="{{ url_for('student_detail', sid=s[0]) }}">{{ s[2] }}</a></td>
+                <td style="padding:8px;">{{ s[3] }}</td>
+                <td style="padding:8px;">{{ s[4] }}</td>
+                <td style="padding:8px;">{{ s[5] }}</td>
+                <td style="padding:8px;">{{ s[6] }}</td>
+                <td style="padding:8px;" class="{{ 'pass' if s[7]=='PASS' else 'fail' }}">
+                    {{ s[7] }}{% if s[8] %} ({{ s[8] }}%){% endif %}
+                </td>
+                <td style="padding:8px;">
+    <a href="{{ url_for('student_detail', sid=s[0]) }}">View</a> |
+    <a href="{{ url_for('edit_student', sid=s[0]) }}" style="color:#1F3864;">Edit</a> |
+    <a href="{{ url_for('delete_student', sid=s[0]) }}"
+       onclick="return confirm('Delete?')" style="color:#dc3545;">Delete</a>
+</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div style="text-align:center;padding:40px;color:#888;">
+            <h3 style="color:#888;">No students found</h3>
+            {% if q %}
+                <p>No student matches "<b>{{ q }}</b>". Try a different name.</p>
+            {% else %}
+                <p>No students in the database yet. Add one or import from Excel.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

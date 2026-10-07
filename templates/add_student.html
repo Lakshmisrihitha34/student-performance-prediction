@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>➕ Add Student</h2>
+
+{% if error %}
+    <div class="flash danger" style="margin-bottom:20px;">❌ {{ error }}</div>
+{% endif %}
+
+<form method="POST">
+    <input type="text" name="student_id" placeholder="Student ID (optional)">
+    <input type="text" name="name" placeholder="Full Name" required>
+
+    <label style="font-weight:bold;color:#1F3864;">Marks Range:</label>
+    <select name="marks_range" style="padding:12px;border-radius:6px;border:1px solid #ccc;">
+        <option value="100">Out of 100 (0 – 100)</option>
+        <option value="50">Out of 50 (0 – 50)</option>
+    </select>
+
+    <input type="number" step="0.1" min="0" max="100" name="knowledge_test" placeholder="Knowledge Test" required>
+    <input type="number" step="0.1" min="0" max="24" name="study_hours" placeholder="Study Hours (0 – 24)" required>
+    <input type="number" step="0.1" min="0" max="100" name="previous_marks" placeholder="Previous Marks" required>
+    <input type="number" step="0.1" min="0" max="100" name="assignments" placeholder="Assignments" required>
+
+    <button type="submit">💾 Save Student</button>
+</form>
+
+<p style="margin-top:15px;"><a href="{{ url_for('students') }}">← Back to list</a></p>
+
+{% endblock %}

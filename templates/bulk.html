@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>📊 Bulk Prediction (Excel Upload)</h2>
+<p style="margin-bottom: 20px; color: #555;">
+    Upload an Excel file with multiple students. The system will predict PASS/FAIL for each row
+    and generate personalized recommendations.
+</p>
+
+<div class="result-box">
+    <h3>Step 1: Download Template</h3>
+    <p>Download the Excel template, fill in student details, then upload it below.</p>
+    <a href="{{ url_for('download_template') }}" 
+       style="display: inline-block; background: #1F3864; color: white; padding: 12px 24px; 
+              text-decoration: none; border-radius: 6px; margin-top: 10px;">
+        ⬇️ Download Excel Template
+    </a>
+</div>
+
+<div class="result-box">
+    <h3>Step 2: Upload Filled Excel</h3>
+    <form method="POST" action="{{ url_for('bulk_predict') }}" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".xlsx" required>
+        <button type="submit">📤 Upload & Predict All</button>
+    </form>
+</div>
+
+<div class="result-box">
+    <h3>📋 Expected Excel Format</h3>
+    <table border="1" style="border-collapse: collapse; width: 100%; font-size: 14px;">
+        <tr style="background: #1F3864; color: white;">
+            <th style="padding: 8px;">Student ID</th>
+            <th style="padding: 8px;">Name</th>
+            <th style="padding: 8px;">Knowledge Test</th>
+            <th style="padding: 8px;">Study Hours</th>
+            <th style="padding: 8px;">Previous Marks</th>
+            <th style="padding: 8px;">Assignments</th>
+        </tr>
+        <tr>
+            <td style="padding: 8px;">S001</td>
+            <td style="padding: 8px;">Sample Student 1</td>
+            <td style="padding: 8px;">85</td>
+            <td style="padding: 8px;">3</td>
+            <td style="padding: 8px;">72</td>
+            <td style="padding: 8px;">90</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;">S002</td>
+            <td style="padding: 8px;">Sample Student 2</td>
+            <td style="padding: 8px;">60</td>
+            <td style="padding: 8px;">1</td>
+            <td style="padding: 8px;">48</td>
+            <td style="padding: 8px;">55</td>
+        </tr>
+    </table>
+    <p style="margin-top: 10px; font-size: 13px; color: #666;">
+        💡 <b>Student ID</b> and <b>Name</b> are optional — only the 4 numeric columns are required.
+    </p>
+</div>
+
+{% endblock %}

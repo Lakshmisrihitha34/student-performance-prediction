@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>📥 Import Summary</h2>
+
+{% if summary.error %}
+    <div class="flash danger" style="margin-bottom:20px;">
+        ❌ Import failed: {{ summary.error }}
+    </div>
+    <a href="{{ url_for('students') }}"
+       style="background:#1F3864;color:white;padding:10px 18px;border-radius:6px;text-decoration:none;">
+       ← Back to My Class
+    </a>
+{% else %}
+
+<div class="result-box">
+    <h3>✅ Import Complete</h3>
+    <p style="color:#555;margin-bottom:20px;">
+        Here's what happened with your uploaded file.
+    </p>
+
+    <!-- Summary table -->
+    <table style="border-collapse:collapse;width:100%;font-size:15px;">
+        <tr style="background:#1F3864;color:white;">
+            <th style="padding:10px;text-align:left;">Metric</th>
+            <th style="padding:10px;text-align:left;">Count</th>
+        </tr>
+        <tr>
+            <td style="padding:10px;">Total rows in Excel</td>
+            <td style="padding:10px;"><b>{{ summary.total }}</b></td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">🔍 Auto-Detected Marks Range</td>
+            <td style="padding:10px;">
+                <b>Out of {{ summary.detected_range }}</b>
+                <span style="color:#888;font-size:13px;">(based on values in file)</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">✅ Students added</td>
+            <td style="padding:10px;color:#28a745;font-weight:bold;">{{ summary.added }}</td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">⚠️ Skipped (duplicate ID)</td>
+            <td style="padding:10px;color:#dc3545;">{{ summary.skipped_duplicate }}</td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">⚠️ Skipped (no name)</td>
+            <td style="padding:10px;color:#dc3545;">{{ summary.skipped_no_name }}</td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">⚠️ Skipped (out of range)</td>
+            <td style="padding:10px;color:#dc3545;">{{ summary.skipped_out_of_range }}</td>
+        </tr>
+    </table>
+
+    <!-- Prediction breakdown -->
+    <h3 style="margin-top:25px;">📊 Prediction Breakdown</h3>
+    <table style="border-collapse:collapse;width:100%;font-size:15px;">
+        <tr style="background:#1F3864;color:white;">
+            <th style="padding:10px;text-align:left;">Result</th>
+            <th style="padding:10px;text-align:left;">Count</th>
+        </tr>
+        <tr>
+            <td style="padding:10px;">🎯 Predicted PASS</td>
+            <td style="padding:10px;color:#28a745;font-weight:bold;">{{ summary.pass_count }}</td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">❌ Predicted FAIL</td>
+            <td style="padding:10px;color:#dc3545;font-weight:bold;">{{ summary.fail_count }}</td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">⚪ N/A (missing marks)</td>
+            <td style="padding:10px;color:#888;font-weight:bold;">{{ summary.na_count }}</td>
+        </tr>
+    </table>
+</div>
+
+<div style="margin-top:25px;">
+    <a href="{{ url_for('students') }}"
+       style="background:#1F3864;color:white;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold;">
+       📋 View My Class
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}

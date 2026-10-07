@@ -3,47 +3,82 @@
 
 <h2>Student Performance Prediction</h2>
 <p style="margin-bottom: 20px; color: #555;">
-    Enter the student's details below to predict pass/fail and get personalized recommendations.
+    Choose the marks range, enter the student's details, and get an instant prediction.
 </p>
 
+{% if error %}
+    <div class="flash danger" style="margin-bottom:20px;">❌ {{ error }}</div>
+{% endif %}
+
 <form method="POST">
-    <input type="number" step="0.1" name="knowledge_test" placeholder="Knowledge Test Score (%)" required>
-    <input type="number" step="0.1" name="study_hours" placeholder="Study Hours per Day" required>
-    <input type="number" step="0.1" name="previous_marks" placeholder="Previous Marks (%)" required>
-    <input type="number" step="0.1" name="assignments" placeholder="Assignment Completion (%)" required>
+    <label style="font-weight:bold;color:#1F3864;">Marks Range:</label>
+    <select name="marks_range" style="padding:12px;border-radius:6px;border:1px solid #ccc;">
+        <option value="100" {% if request.form.get('marks_range','100') == '100' %}selected{% endif %}>Out of 100 (0 – 100)</option>
+        <option value="50" {% if request.form.get('marks_range') == '50' %}selected{% endif %}>Out of 50 (0 – 50)</option>
+    </select>
+
+    <input type="number" step="0.1" min="0" max="100" name="knowledge_test" placeholder="Knowledge Test Score" required>
+    <input type="number" step="0.1" min="0" max="24" name="study_hours" placeholder="Study Hours per Day (0 – 24)" required>
+    <input type="number" step="0.1" min="0" max="100" name="previous_marks" placeholder="Previous Marks" required>
+    <input type="number" step="0.1" min="0" max="100" name="assignments" placeholder="Assignment Completion" required>
     <button type="submit">🔮 Predict</button>
 </form>
 
 {% if result %}
 <div class="result-box">
-
     <h3>Input Summary:</h3>
     <ul>
-        <li><b>Knowledge Test:</b> {{ result.input.kt }}%</li>
+        <li><b>Marks Range:</b> Out of {{ result.marks_range }}</li>
+        <li><b>Knowledge Test:</b> {{ result.input.kt }} (normalized: {{ result.input.kt_n }}%)</li>
         <li><b>Study Hours:</b> {{ result.input.sh }}/day</li>
-        <li><b>Previous Marks:</b> {{ result.input.pm }}%</li>
-        <li><b>Assignments:</b> {{ result.input.asg }}%</li>
+        <li><b>Previous Marks:</b> {{ result.input.pm }} (normalized: {{ result.input.pm_n }}%)</li>
+        <li><b>Assignments:</b> {{ result.input.asg }} (normalized: {{ result.input.asg_n }}%)</li>
     </ul>
 
     <h3 style="margin-top: 20px;">Prediction Result:</h3>
     <p class="{{ 'pass' if result.prediction == 'PASS' else 'fail' }}">
-        🎯 {{ result.prediction }}
+        🎯 {{ result.prediction }} ({{ result.confidence }}% confident)
     </p>
 
     <h3 style="margin-top: 20px;">Personalized Recommendations:</h3>
     <ul>
-        {% for tip in result.recommendation %}
-            <li>{{ tip }}</li>
-        {% endfor %}
+        {% for tip in result.recommendation %}<li>{{ tip }}</li>{% endfor %}
     </ul>
 
-    <h3 style="margin-top: 20px;">SHAP Explanation:</h3>
-    <p style="color: #555;">
-        SHAP explains which factors pushed this prediction toward
-        <b>{{ result.prediction }}</b>. The key factors were:
-        knowledge test performance, study hours, previous marks, and assignment completion.
-    </p>
-
+    {% if result.shap %}
+    <h3 style="margin-top: 20px;">🧠 SHAP Explanation:</h3>
+    <table style="border-collapse:collapse;width:100%;margin-top:10px;">
+        <tr style="background:#1F3864;color:white;">
+            <th style="padding:8px;text-align:left;">Feature</th>
+            <th style="padding:8px;text-align:left;">Contribution</th>
+            <th style="padding:8px;text-align:left;">Effect</th>
+        </tr>
+        {% for s in result.shap %}
+        <tr>
+            <td style="padding:8px;">{{ s.name }}</td>
+            <td style="padding:8px;">
+                <div style="display:flex;align-items:center;">
+                    <div style="width:180px;background:#eee;height:14px;border-radius:4px;overflow:hidden;">
+                        {% if s.value > 0 %}
+                            <div style="background:#28a745;width:{{ (s.abs * 300)|round(1) }}%;height:100%;"></div>
+                        {% else %}
+                            <div style="background:#dc3545;width:{{ (s.abs * 300)|round(1) }}%;height:100%;"></div>
+                        {% endif %}
+                    </div>
+                    <span style="margin-left:10px;">{{ '+' if s.value > 0 else '' }}{{ s.value }}</span>
+                </div>
+            </td>
+            <td style="padding:8px;">
+                {% if s.value > 0 %}
+                    <span style="color:#28a745;font-weight:bold;">Helped PASS</span>
+                {% else %}
+                    <span style="color:#dc3545;font-weight:bold;">Pushed FAIL</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 </div>
 {% endif %}
 

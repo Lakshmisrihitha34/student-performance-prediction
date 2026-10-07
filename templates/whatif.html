@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🔮 What-If Analysis</h2>
+<p style="color:#555;margin-bottom:20px;">
+    Move the sliders to see how changing any input affects the prediction.
+    The result updates instantly.
+</p>
+
+<form method="POST" id="whatifForm" style="max-width:600px;">
+    <label style="font-weight:bold;color:#1F3864;">Knowledge Test: <span id="ktVal">{{ result.kt if result else 50 }}</span>%</label>
+    <input type="range" name="knowledge_test" id="kt" min="0" max="100" value="{{ result.kt if result else 50 }}"
+           oninput="document.getElementById('ktVal').innerText=this.value; document.getElementById('whatifForm').submit();">
+
+    <label style="font-weight:bold;color:#1F3864;">Study Hours: <span id="shVal">{{ result.sh if result else 3 }}</span>/day</label>
+    <input type="range" name="study_hours" id="sh" min="0" max="24" step="0.5" value="{{ result.sh if result else 3 }}"
+           oninput="document.getElementById('shVal').innerText=this.value; document.getElementById('whatifForm').submit();">
+
+    <label style="font-weight:bold;color:#1F3864;">Previous Marks: <span id="pmVal">{{ result.pm if result else 50 }}</span>%</label>
+    <input type="range" name="previous_marks" id="pm" min="0" max="100" value="{{ result.pm if result else 50 }}"
+           oninput="document.getElementById('pmVal').innerText=this.value; document.getElementById('whatifForm').submit();">
+
+    <label style="font-weight:bold;color:#1F3864;">Assignments: <span id="asgVal">{{ result.asg if result else 50 }}</span>%</label>
+    <input type="range" name="assignments" id="asg" min="0" max="100" value="{{ result.asg if result else 50 }}"
+           oninput="document.getElementById('asgVal').innerText=this.value; document.getElementById('whatifForm').submit();">
+</form>
+
+{% if result %}
+<div class="result-box" style="margin-top:25px;">
+    <h3>Live Prediction:</h3>
+    <p class="{{ 'pass' if result.prediction == 'PASS' else 'fail' }}"
+       style="font-size:36px;margin:15px 0;">
+        🎯 {{ result.prediction }}
+        <span style="font-size:16px;color:#666;">({{ result.confidence }}% confident)</span>
+    </p>
+    <p style="color:#666;font-size:13px;margin-top:15px;">
+        Move any slider above — the prediction updates automatically.
+    </p>
+</div>
+{% else %}
+<div class="result-box" style="margin-top:25px;text-align:center;padding:30px;color:#888;">
+    <h3>👆 Move a slider to see the live prediction</h3>
+</div>
+{% endif %}
+
+{% endblock %}

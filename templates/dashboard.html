@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>📊 Class Dashboard</h2>
+<p style="color:#555;margin-bottom:25px;">
+    A quick health check of your whole class — powered by your prediction model.
+</p>
+
+<!-- KPI Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:30px;">
+    <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+        <h3 style="color:#1F3864;font-size:14px;margin-bottom:8px;">👥 Total Students</h3>
+        <p style="font-size:32px;font-weight:bold;color:#1F3864;margin:0;">{{ stats.total }}</p>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+        <h3 style="color:#28a745;font-size:14px;margin-bottom:8px;">✅ Passed</h3>
+        <p style="font-size:32px;font-weight:bold;color:#28a745;margin:0;">{{ stats.passed }}</p>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+        <h3 style="color:#dc3545;font-size:14px;margin-bottom:8px;">❌ Failed</h3>
+        <p style="font-size:32px;font-weight:bold;color:#dc3545;margin:0;">{{ stats.failed }}</p>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+        <h3 style="color:#6f42c1;font-size:14px;margin-bottom:8px;">🎯 Pass Rate</h3>
+        <p style="font-size:32px;font-weight:bold;color:#6f42c1;margin:0;">{{ stats.pass_rate }}%</p>
+    </div>
+</div>
+
+<!-- Pie Chart -->
+<div class="result-box" style="margin-bottom:25px;">
+    <h3>Prediction Distribution</h3>
+    <div style="max-width:400px;margin:20px auto;">
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<!-- Bar Chart -->
+<div class="result-box" style="margin-bottom:25px;">
+    <h3>Class Averages</h3>
+    <canvas id="barChart" height="100"></canvas>
+</div>
+
+<!-- Extra Stats -->
+<div class="result-box">
+    <h3>Detailed Averages</h3>
+    <table style="border-collapse:collapse;width:100%;font-size:15px;margin-top:10px;">
+        <tr style="background:#1F3864;color:white;">
+            <th style="padding:10px;text-align:left;">Metric</th>
+            <th style="padding:10px;text-align:left;">Average</th>
+        </tr>
+        <tr>
+            <td style="padding:10px;">Knowledge Test</td>
+            <td style="padding:10px;"><b>{{ stats.avg_kt }}</b></td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">Study Hours</td>
+            <td style="padding:10px;"><b>{{ stats.avg_sh }}</b></td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">Previous Marks</td>
+            <td style="padding:10px;"><b>{{ stats.avg_pm }}</b></td>
+        </tr>
+        <tr style="background:#f4f8ff;">
+            <td style="padding:10px;">Assignments</td>
+            <td style="padding:10px;"><b>{{ stats.avg_asg }}</b></td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">Average Confidence</td>
+            <td style="padding:10px;"><b>{{ stats.avg_conf }}%</b></td>
+        </tr>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Pie Chart
+new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+        labels: ['PASS', 'FAIL', 'N/A'],
+        datasets: [{
+            data: [{{ stats.passed }}, {{ stats.failed }}, {{ stats.na }}],
+            backgroundColor: ['#28a745', '#dc3545', '#cccccc']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+
+// Bar Chart
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Knowledge Test', 'Study Hours', 'Previous Marks', 'Assignments'],
+        datasets: [{
+            label: 'Class Average',
+            data: [{{ stats.avg_kt }}, {{ stats.avg_sh }}, {{ stats.avg_pm }}, {{ stats.avg_asg }}],
+            backgroundColor: '#1F3864'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+
+{% endblock %}

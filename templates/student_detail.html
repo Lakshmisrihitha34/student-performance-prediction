@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>👤 {{ student[2] }}</h2>
+
+<div class="result-box">
+    <p><b>Student ID:</b> {{ student[1] or "-" }}</p>
+    <p><b>Knowledge Test:</b> {{ student[3] }}%</p>
+    <p><b>Study Hours:</b> {{ student[4] }}/day</p>
+    <p><b>Previous Marks:</b> {{ student[5] }}%</p>
+    <p><b>Assignments:</b> {{ student[6] }}%</p>
+
+    <h3 style="margin-top:20px;">Prediction:</h3>
+    <p class="{{ 'pass' if student[7]=='PASS' else 'fail' }}">
+        🎯 {{ student[7] }}{% if student[8] %} ({{ student[8] }}% confident){% endif %}
+    </p>
+</div>
+
+{% if shap %}
+<div class="result-box" style="margin-top:20px;">
+    <h3>🧠 Why? — SHAP Explanation</h3>
+    <p style="color:#555; font-size:14px;">
+        Positive values pushed the prediction toward <b>PASS</b>;
+        negative values pushed it toward <b>FAIL</b>.
+        Longer bars = stronger influence.
+    </p>
+
+    <table style="border-collapse:collapse;width:100%;margin-top:15px;">
+        <tr style="background:#1F3864;color:white;">
+            <th style="padding:8px;text-align:left;">Feature</th>
+            <th style="padding:8px;text-align:left;">Contribution</th>
+            <th style="padding:8px;text-align:left;">Effect</th>
+        </tr>
+        {% for s in shap %}
+        <tr>
+            <td style="padding:8px;">{{ s.name }}</td>
+            <td style="padding:8px;">
+                <div style="display:flex;align-items:center;">
+                    <div style="width:180px;background:#eee;height:14px;border-radius:4px;overflow:hidden;">
+                        {% if s.value > 0 %}
+                            <div style="background:#28a745;width:{{ (s.abs * 300)|round(1) }}%;height:100%;"></div>
+                        {% else %}
+                            <div style="background:#dc3545;width:{{ (s.abs * 300)|round(1) }}%;height:100%;"></div>
+                        {% endif %}
+                    </div>
+                    <span style="margin-left:10px;">{{ '+' if s.value > 0 else '' }}{{ s.value }}</span>
+                </div>
+            </td>
+            <td style="padding:8px;">
+                {% if s.value > 0 %}
+                    <span style="color:#28a745;font-weight:bold;">Helped PASS</span>
+                {% else %}
+                    <span style="color:#dc3545;font-weight:bold;">Pushed FAIL</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p style="margin-top:15px;color:#555;font-size:13px;">
+        💡 The strongest factor was <b>{{ shap[0].name }}</b>.
+    </p>
+</div>
+{% elif student[7] == 'N/A' %}
+<div class="result-box" style="margin-top:20px;">
+    <h3>🧠 Why? — No Explanation Available</h3>
+    <p style="color:#555;">
+        This student has no marks recorded. SHAP can only explain predictions
+        when all 4 input values are present.
+    </p>
+</div>
+{% endif %}
+
+<p style="margin-top:20px;"><a href="{{ url_for('students') }}">← Back to list</a></p>
+
+{% endblock %}
